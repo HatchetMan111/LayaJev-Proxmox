@@ -1,0 +1,18 @@
+[Unit]
+Description=laya-local – lokale Typed-Decision-Engine mit Web-UI
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=laya
+Group=laya
+WorkingDirectory=/opt/laya-local
+Environment=PYTHONUNBUFFERED=1
+Environment=OMP_NUM_THREADS=4
+ExecStart=/opt/laya-local/.venv/bin/python -m uvicorn app.server:app --host 0.0.0.0 --port 8080
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

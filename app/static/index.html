@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>laya-local</title>
+<style>
+body { font-family: system-ui, sans-serif; max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+textarea, pre { width: 100%; box-sizing: border-box; }
+pre { background: #f4f4f4; padding: 1rem; white-space: pre-wrap; }
+button { padding: 0.5rem 1rem; }
+.row { margin: 1rem 0; }
+</style>
+</head>
+<body>
+<h1>laya-local (Proxmox LXC)</h1>
+<p>Lokale Typed-Decision-Engine. Erster Aufruf lädt Checkpoint (30&ndash;90s beim ersten Mal).</p>
+<div class="row">
+<label for="state">State (Text oder JSON):</label><br>
+<textarea id="state" rows="4">We were billed twice for March. Please refund the duplicate today.</textarea>
+</div>
+<div class="row">
+<button id="go">Entscheiden (Triage-Preset)</button>
+<button id="btn-de">DE-Beispiel</button>
+</div>
+<pre id="out">Bereit.</pre>
+<script>
+const PRESET = {
+  department: {type: "choice", instructions: "Which department should handle this request?",
+    criteria: {billing: "invoices, payments, refunds", technical: "bugs, outages, system errors", sales: "pricing, new contracts"}},
+  urgency: {type: "score", instructions: "How urgent is this request?", criteria: ["not urgent", "soon", "critical"]},
+  refund: {type: "noul", instructions: "Does the user request a refund?"}
+};
+async function run(state) {
+  document.getElementById("out").textContent = "lädt … (Erstaufruf 30–90s)";
+  try {
+    const r = await fetch("/api/predict", {method: "POST",
+      headers: {"content-type": "application/json"},
+      body: JSON.stringify({state, questions: PRESET})});
+    document.getElementById("out").textContent = await r.text();
+  } catch (e) {
+    document.getElementById("out").textContent = "Fehler: " + e;
+  }
+}
+document.getElementById("go").onclick = () => run(document.getElementById("state").value);
+document.getElementById("btn-de").onclick = () => {
+  document.getElementById("state").value = "Der Kunde wurde zweimal belastet, bitte erstatten.";
+  run(document.getElementById("state").value);
+};
+</script>
+</body>
+</html>
