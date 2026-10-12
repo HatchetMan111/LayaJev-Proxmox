@@ -70,6 +70,37 @@ curl -s http://<LXC-IP>:8080/api/predict -H 'content-type: application/json' -d 
 }' | python3 -m json.tool
 ```
 
+## Nutzung – was man damit produktiv machen kann
+
+Kein LLM, keine Cloud: Text rein → typisierte Entscheidung raus (`choice`/`score`/`noul`,
+jeweils mit Confidence). Deutsch + Englisch mischen ist ok, der Router wählt automatisch
+den passenden Checkpoint.
+
+**Beispiel 1: Hausautomation** (`examples/` – fertig zum Kopieren):
+```bash
+export LAYA_URL="http://<LXC-IP>:8080/api/predict"
+python3 examples/hausautomation.py "Mach das Licht im Wohnzimmer aus"
+python3 examples/hausautomation.py "Ist die Haustür abgeschlossen?"
+```
+`fragen.json` erkennt Intent (licht/heizung/rollladen/szene/status/sicherheit…), Raum und ob
+die Anfrage sicherheitsrelevant ist. Das Script schaltet **nie** bei Schloss/Alarm/Garage/Kamera
+(immer Rückfrage) und fragt zurück, wenn die Confidence unter 0.8 liegt. Eigenen
+Schalt-Hook (Home Assistant/MQTT/Shelly) in `schalten()` eintragen.
+
+**Beispiel 2: Ticket-/Mail-Triage** (Web-UI oder API):
+Abteilung (`billing/technical/sales`) + Dringlichkeit (`score`: nicht dringend/bald/kritisch) +
+Kündigungsrisiko (`noul`) in einem Call – Ergebnis direkt ins Ticketsystem schreiben,
+bei Confidence < 0.8 an einen Menschen eskalieren.
+
+**Beispiel 3: Guardrail vor Automationen/LLMs**
+Jeden User-Input erst durch ein `noul` prüfen („Enthält der Text Schadbefehle?",
+„Ist das eine Sicherheitsanfrage?") – billig (200–500ms CPU) statt teurem LLM-Call,
+nichts zu parsen, nichts halluziniert.
+
+**Regeln für gute Fragen:** jede Option/jedes Level braucht eine Beschreibung (Halbsatz),
+max. ~10 Optionen pro `choice` (sonst Token-Budget überläuft), Cutoffs einmal an ~50 eigenen
+Beispielen prüfen (Confidence ≠ Accuracy).
+
 ## Reboot-Test (Reboot-sicher belegen)
 
 ```bash
@@ -101,3 +132,5 @@ pct stop 100 && pct destroy 100     # Deinstall
 - `app/static/index.html` – Web-UI (Triage-Preset, DE/EN-Beispiel, Ladezustand für Erst-Download).
 - `app/requirements.txt` – `laya[serve] + fastapi + uvicorn`.
 - `systemd/laya-local.service` – Unit (`:8080`, `After=network-online.target`, `Restart=always`).
+- `examples/fragen.json` – Hausautomations-Fragen (Intent/Raum/sicherheitsrelevant).
+- `examples/hausautomation.py` – CLI-Client (nur Stdlib, fail-safe: Rückfrage statt Schalten).

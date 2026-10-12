@@ -1,0 +1,34 @@
+{
+  "intent": {
+    "type": "choice",
+    "instructions": "Was soll im Smart Home passieren?",
+    "criteria": {
+      "licht_an": "ein Licht oder eine Lampe einschalten",
+      "licht_aus": "ein Licht oder eine Lampe ausschalten",
+      "heizung": "Temperatur, Heizung oder Thermostat verstellen",
+      "rollladen": "Rollo, Jalousie oder Markise hoch oder runter fahren",
+      "szene": "eine Szene oder Routine starten wie Filmabend, Gute Nacht oder Urlaub",
+      "status": "nur einen Zustand abfragen, nichts schalten",
+      "sicherheit": "Tuerschloss, Alarmanlage, Garage oder Kamera betrifft",
+      "sonstiges": "nichts davon"
+    }
+  },
+  "raum": {
+    "type": "choice",
+    "instructions": "Welcher Raum ist gemeint?",
+    "criteria": {
+      "wohnzimmer": "Wohnzimmer oder Wohnbereich",
+      "kueche": "Kueche",
+      "schlafzimmer": "Schlafzimmer",
+      "bad": "Bad oder WC",
+      "buero": "Buero oder Arbeitszimmer",
+      "flur": "Flur, Diele oder Treppenhaus",
+      "garten": "Garten, Terrasse oder Balkon",
+      "unklar": "kein Raum erkennbar oder mehrere Raeume"
+    }
+  },
+  "sicherheitsrelevant": {
+    "type": "noul",
+    "instructions": "Veraendert die Anfrage Schloss, Alarm, Garage oder Kamera?"
+  }
+}
