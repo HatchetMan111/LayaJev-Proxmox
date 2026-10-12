@@ -316,7 +316,11 @@ pct exec "$CT_ID" -- bash -c '
     python3 -m venv /opt/laya-local/.venv
   fi
   /opt/laya-local/.venv/bin/pip install --upgrade pip
-  /opt/laya-local/.venv/bin/pip install -r /opt/laya-local/requirements.txt
+  # CPU-only torch VOR laya: das Default-torch-Rad zieht sonst den kompletten
+  # CUDA-Ballast (nvidia-*-Pakete, mehrere GB) und sprengt kleine Disks mit
+  # Errno 28. --no-cache-dir halbiert den Spitzenverbrauch zusaetzlich.
+  /opt/laya-local/.venv/bin/pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+  /opt/laya-local/.venv/bin/pip install --no-cache-dir -r /opt/laya-local/requirements.txt
   /opt/laya-local/.venv/bin/python -c "import fastapi, uvicorn; print(fastapi.__version__)"
   chown -R laya:laya /opt/laya-local
 '

@@ -92,6 +92,7 @@ pct stop 100 && pct destroy 100     # Deinstall
 - Jeder Fehler gibt Befehl + Zeile + Exit-Code aus, Voll-Log unter `/tmp/laya-local-install-*.log`.
 - `bash laya-local.sh --debug` für `bash -x`-Trace.
 - Im Container: `systemctl status laya-local --no-pager`, `journalctl -u laya-local -n 100`.
+- `OSError: [Errno 28] No space left on device` beim pip-Install (alte Script-Version < CPU-Fix): torch-CUDA-Bundle hat die Platte gefüllt. Abhilfe: Container löschen (`pct stop <CT> && pct destroy <CT>`) und Installer neu von GitHub laden (enthält CPU-only-torch + `--no-cache-dir`), ggf. `--disk 16`.
 
 ## Dateien
 

@@ -1,3 +1,6 @@
+# Hinweis: torch wird vom Installer VORAB als CPU-Build installiert
+# (pip install torch --index-url https://download.pytorch.org/whl/cpu),
+# damit pip nicht das CUDA-Bundle (mehrere GB) zieht. Erst danach diese Datei.
 laya[serve]>=0.4.1
 fastapi>=0.110.0
 uvicorn>=0.27.0
